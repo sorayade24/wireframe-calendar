@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rentsody · Wireframe calendario</title>
+<style>
+  :root{--bg:#fff;--ink:#2b2b2b;--muted:#8f8f8f;--faint:#b8b8b8;--line:#dcdcdc;--line2:#cccccc;
+    --fill:#f4f4f4;--fill2:#ececec;--fill3:#e2e2e2;--dark:#4a4a4a;--darker:#3a3a3a;}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f0f0f0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4}
+  .banner{background:var(--fill3);border-bottom:1px solid var(--line2);padding:7px 16px;font-size:12px;color:var(--muted);letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center}
+  .banner b{color:var(--dark);letter-spacing:.06em}
+  .app{max-width:1080px;margin:16px auto;background:var(--bg);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .unit{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:6px;padding:7px 11px;font-weight:600;color:var(--dark)}
+  .unit .ph{width:26px;height:26px;border-radius:5px;background:var(--fill2);border:1px solid var(--line)}
+  .month{display:inline-flex;align-items:center;gap:14px;font-weight:600;color:var(--dark)}
+  .navb{width:26px;height:26px;border:1px solid var(--line2);border-radius:6px;background:var(--fill);color:var(--muted);display:inline-flex;align-items:center;justify-content:center}
+  .unitwrap{position:relative}
+  .utrig{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line2);border-radius:8px;padding:8px 12px;cursor:pointer;background:#fff;min-width:290px}
+  .uthumb{width:30px;height:30px;border-radius:6px;background:var(--fill2);border:1px solid var(--line);flex:none}
+  .utname{font-weight:600;color:var(--ink);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}
+  .udrop{position:absolute;top:calc(100% + 6px);left:0;width:344px;max-width:92vw;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 26px rgba(0,0,0,.14);z-index:40;padding:10px}
+  .usearch{display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:8px;padding:9px 11px}
+  .usearch input{border:0;outline:0;font-size:14px;width:100%;background:transparent}
+  .ucount{font-size:11px;color:var(--muted);padding:8px 4px 4px;margin:0}
+  .ulist{max-height:258px;overflow-y:auto}
+  .uopt{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer}
+  .uopt:hover{background:var(--fill)}
+  .uopt.on{background:var(--fill2)}
+  .uopt .un{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .uempty{padding:20px;text-align:center;color:var(--muted);font-size:13px}
+  .wrap{display:grid;grid-template-columns:1fr 310px;gap:18px;padding:18px}
+  @media(max-width:820px){.wrap{grid-template-columns:1fr}}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px;font-size:12px;color:var(--muted)}
+  .lg{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border-radius:3px;border:1px solid var(--line2);display:inline-block}
+  .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-size:11px;color:var(--muted);margin-bottom:6px}
+  .cal{display:block}
+  .week{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+  .rpill{position:absolute;bottom:8px;height:24px;display:flex;align-items:center;justify-content:space-between;gap:6px;border-radius:13px;padding:0 9px;font-size:11px;white-space:nowrap;overflow:hidden;pointer-events:none}
+  .rpill.active{background:#e2e2e2;color:#3a3a3a}
+  .rpill.confirmed{background:#c7c7c7;color:#2b2b2b}
+  .rpill.past{background:#ececec;color:#b0b0b0}
+  .rpill .nm{overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .rpill.past .chico{background:#c4c4c4}
+  .c{position:relative;border:1px solid var(--line);border-radius:7px;min-height:64px;padding:6px 7px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;background:#fff}
+  .c .d{font-size:11px;color:var(--muted)}
+  .c .d.st{text-decoration:line-through}
+  .c .p{font-size:14px;font-weight:600;color:var(--ink);line-height:1}
+  .c.past{background:var(--fill);cursor:not-allowed}
+  .c.today .d{background:var(--dark);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+  .c.hl{outline:2px solid var(--dark);outline-offset:-2px;background:var(--fill)}
+  .c.res{background:#f4f4f4}
+  .c.blk{background:repeating-linear-gradient(45deg,#f0f0f0,#f0f0f0 4px,#e2e2e2 4px,#e2e2e2 8px)}
+  .c.blk .bk{font-size:10px;color:var(--dark);font-weight:600}
+  .c .pen{position:absolute;top:3px;right:5px;font-size:12px;color:var(--dark);line-height:1}
+  .c .syncdot{position:absolute;bottom:6px;right:6px;width:8px;height:8px;border-radius:50%}
+  .c .syncdot.pending{border:1.5px solid #8f8f8f;background:#fff}
+  .c .syncdot.error{background:#4a4a4a}
+  .calhint{font-size:12px;color:var(--muted);margin:12px 2px 0}
+  .syncrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+  .syncrow:last-of-type{border-bottom:0}
+  .stag{font-size:11px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .stag.ok{background:var(--fill2);color:#4a4a4a}
+  .stag.pending{background:#eee;color:#6a6a6a}
+  .stag.error{background:#4a4a4a;color:#fff}
+  .btn.mini{padding:4px 9px;font-size:11px}
+  .c .lk{position:absolute;top:5px;right:6px}
+  .resbar{display:flex;align-items:center;justify-content:space-between;gap:6px;border-radius:13px;padding:4px 8px;font-size:11px;white-space:nowrap;overflow:hidden;min-height:22px}
+  .resbar.active{background:#e6e6e6;color:#3a3a3a}
+  .resbar.confirmed{background:#cccccc;color:#2b2b2b}
+  .resbar.past{background:#efefef;color:#b0b0b0}
+  .resbar .nm{overflow:hidden;text-overflow:ellipsis;font-weight:600}
+  .chico{width:19px;height:19px;border-radius:5px;background:var(--dark);color:#fff;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .resbar.past .chico{background:#c4c4c4}
+  .panel{border:1px solid var(--line);border-radius:8px;padding:14px;min-height:380px;background:#fff}
+  .phead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .x{color:var(--muted);cursor:pointer;border:0;background:none;font-size:16px;line-height:1}
+  .ph-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:0}
+  .empty{text-align:center;color:var(--muted);padding:16px 6px}
+  h3.p-h{margin:0 0 3px;font-size:15px}
+  .sub{font-size:12px;color:var(--muted);margin:0 0 14px}
+  .menurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+  .menurow:last-child{border-bottom:0}
+  .menurow.info{cursor:default}
+  .menurow .mt{font-weight:600;color:var(--ink)}
+  .menurow .mv{font-weight:600;color:var(--ink)}
+  .chev{color:var(--muted)}
+  .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .kv:last-of-type{border-bottom:0}
+  .kv .kn{display:inline-flex;align-items:center;gap:8px}
+  .abv{width:22px;height:22px;border-radius:5px;background:var(--fill2);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted)}
+  label.f{font-size:12px;color:var(--muted);display:block;margin:12px 0 5px}
+  .field{display:flex;align-items:center;border:1px solid var(--line2);border-radius:6px;padding:8px 10px;margin-bottom:4px}
+  .field input{border:0;outline:0;font-size:14px;width:100%;color:var(--ink);background:transparent}
+  .field .u{color:var(--muted);font-size:12px;white-space:nowrap}
+  .field.err{border-color:#9a9a9a;background:var(--fill)}
+  .datef{border:1px solid var(--line2);border-radius:6px;padding:8px 10px;font-family:inherit;font-size:13px;width:100%;color:var(--ink);background:#fff}
+  .err-t{font-size:12px;color:var(--dark);margin:4px 0 0}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:6px;padding:9px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:var(--fill)}
+  .btn.primary{background:var(--dark);border-color:var(--dark);color:#fff}
+  .btn.primary:hover{background:var(--darker)}
+  .btn.block{width:100%;justify-content:flex-start;padding:13px;margin-bottom:8px}
+  .btn.wide{width:100%}
+  .chrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .chrow:last-of-type{border-bottom:0}
+  .chk{width:18px;height:18px;border:1px solid var(--line2);border-radius:4px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:transparent;flex:none}
+  .chk.on{background:var(--dark);border-color:var(--dark);color:#fff}
+  .chname{display:inline-flex;align-items:center;gap:8px;font-size:13px}
+  .miniinp{border:1px solid var(--line2);border-radius:5px;padding:5px 7px;font-size:13px;width:82px;text-align:right;font-family:inherit}
+  .note{border:1px solid var(--line2);background:var(--fill);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--dark);margin-top:12px;display:flex;gap:8px}
+  .note .i{font-weight:700}
+  .radio{display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;font-size:13px}
+  .dotr{width:16px;height:16px;border-radius:50%;border:1px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .dotr.on::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--dark)}
+  .diff{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .diff:last-of-type{border-bottom:0}
+  .old{color:var(--faint);text-decoration:line-through;margin-right:6px}
+  .foot{display:flex;gap:8px;margin-top:16px}
+  .foot .btn{flex:1}
+  .hist{padding:10px 0;border-bottom:1px solid var(--line)}
+  .hist:last-child{border-bottom:0}
+  .hist .ht{font-size:13px;font-weight:600}
+  .hist .hs{font-size:12px;color:var(--muted);margin-top:2px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--darker);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;opacity:0;transition:.25s;pointer-events:none}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .reset{font-size:12px;color:var(--muted);border:0;background:none;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="banner"><span><b>WIREFRAME</b> · prototipo de comportamiento (no es el diseño final)</span><button class="reset" onclick="resetApp()">Reiniciar demo</button></div>
+<div class="app">
+  <div class="topbar">
+    <div class="unitwrap" id="unitwrap"></div>
+    <span class="month"><span class="navb">‹</span> Junio 2026 <span class="navb">›</span></span>
+  </div>
+  <div class="wrap">
+    <div>
+      <div class="legend">
+        <span class="lg"><span class="sw" style="background:#e6e6e6"></span> Reserva activa</span>
+        <span class="lg"><span class="sw" style="background:#cccccc"></span> Reserva confirmada</span>
+        <span class="lg"><span class="sw" style="background:var(--fill)"></span> Pasada</span>
+      </div>
+      <div class="wk"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+      <div class="cal" id="cal"></div>
+      <p class="calhint">Haz clic en un día para ver o editar su precio, o usa "Editar precios por rango" para varias fechas.</p>
+    </div>
+    <div class="panel" id="panel"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const BASE=300, TODAY=12;
+const CH=[{k:'web',n:'Web',a:'We'},{k:'airbnb',n:'Airbnb',a:'Ab'},{k:'booking',n:'Booking.com',a:'Bk'}];
+const MOTIVOS=['Uso propio','Mantenimiento','Reforma'];
+let days={}, app={}, history=[], RESLIST=[];
+
+function initDays(){
+  days={};
+  for(let i=1;i<=30;i++) days[i]={ch:{web:BASE,airbnb:BASE,booking:BASE},manual:false,reserved:false,res:null,blocked:false,motivo:'',bch:[],sync:{web:'ok',airbnb:'ok',booking:'ok'},synced:'hace 2 min',origin:{web:'base',airbnb:'base',booking:'base'}};
+  days[14].ch={web:350,airbnb:350,booking:350}; days[14].manual=true; days[14].sync.booking='error'; days[14].origin={web:'rentsody',airbnb:'rentsody',booking:'rentsody'};
+  const RES=[
+    {name:'Carlos Pérez',comp:2,ch:'booking',state:'past',from:2,to:3,code:'1120'},
+    {name:'Roberto Martín',comp:2,ch:'booking',state:'active',from:17,to:18,code:'4821'},
+    {name:'María Navarro',comp:5,ch:'airbnb',state:'confirmed',from:20,to:21,code:'7305'}
+  ];
+  RESLIST=RES;
+  RES.forEach(r=>{ for(let n=r.from;n<=r.to;n++){ days[n].reserved=true; days[n].res=r; } });
+  days[25].blocked=true; days[25].motivo='Mantenimiento'; days[25].bch=['web','airbnb','booking'];
+  days[16].ch.airbnb=280; days[16].origin.airbnb='airbnb';
+  history=[{ht:'Precio · 14 jun',hs:'300 → 350 € · tú · 30 jun'}];
+}
+function resetApp(){ initDays(); app={view:'idle',day:null,form:null,cellDay:null}; render(); toast('Demo reiniciada'); }
+
+const pad2=n=>('0'+n).slice(-2);
+const dstr=d=>'2026-06-'+pad2(d);
+const dnum=s=>parseInt(s.slice(8,10),10);
+const isPast=n=>n<TODAY;
+const editable=n=>n>=1&&n<=30&&!isPast(n)&&!days[n].reserved&&!days[n].blocked;
+function inRange(from,to){ const a=[]; if(from==null||to==null||from>to) return a; for(let n=from;n<=to;n++) a.push(n); return a; }
+function reservedIn(from,to){ return inRange(from,to).filter(n=>days[n]&&days[n].reserved).length; }
+function editableIn(from,to){ return inRange(from,to).filter(editable); }
+function fLabel(f){ if(f.scope==='day') return 'Día '+f.from+' jun'; if(f.from==null||f.to==null) return 'Editar por rango'; return f.from+'–'+f.to+' jun · '+(f.to-f.from+1)+(f.to-f.from>0?' noches':' noche'); }
+
+let toastT;
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),1700); }
+
+function chBadge(ch){ const m={web:'W',airbnb:'A',booking:'B'}; return '<span class="chico" title="'+ch+'">'+(m[ch]||'?')+'</span>'; }
+function daySync(n){ const y=days[n].sync; if(!y) return 'ok'; const v=[y.web,y.airbnb,y.booking]; if(v.indexOf('error')>-1) return 'error'; if(v.indexOf('pending')>-1) return 'pending'; return 'ok'; }
+function originLabel(o){ return o==='rentsody'?'Editado en Rentsody':(o==='base'?'Precio base':'Viene de '+chName(o)); }
+function cellHtml(n){
+  const dd=days[n]; let cls='c', body='', extra='';
+  const past=isPast(n);
+  const num='<span class="d'+(past?' st':'')+'">'+n+'</span>';
+  const hl=app.form&&app.form.from!=null&&app.form.to!=null&&n>=app.form.from&&n<=app.form.to;
+  if(dd.reserved){
+    cls+=' res';
+  } else if(dd.blocked){
+    body='<span class="bk">Bloqueada</span><span style="font-size:10px;color:var(--muted)">'+dd.motivo+'</span>'; extra='<span class="lk">🔒</span>';
+  } else if(past){
+    body='<span class="p" style="font-weight:400;color:var(--faint)">'+dd.ch.web+' €</span>';
+  } else {
+    body='<span class="p">'+dd.ch.web+' €</span>'; if(dd.manual) extra='<span class="pen">✎</span>'; const ds=daySync(n); if(ds!=='ok') extra+='<span class="syncdot '+ds+'"></span>';
+    if(n===TODAY) cls+=' today';
+    if(hl) cls+=' hl';
+  }
+  if(past) cls+=' past';
+  return '<div class="'+cls+'" data-day="'+n+'">'+num+body+extra+'</div>';
+}
+const colOf=n=>(n-1)%7;
+function segsForWeek(wi){ const first=wi*7+1, last=Math.min(wi*7+7,30), out=[]; RESLIST.forEach(r=>{ const s=Math.max(r.from,first), e=Math.min(r.to,last); if(s<=e) out.push({cs:colOf(s),ce:colOf(e),res:r,isStart:(r.from>=first&&r.from<=last)}); }); return out; }
+function renderCal(){
+  let h='';
+  for(let wi=0; wi<5; wi++){
+    const first=wi*7+1, last=Math.min(wi*7+7,30);
+    h+='<div class="week">';
+    for(let n=first;n<=last;n++) h+=cellHtml(n);
+    segsForWeek(wi).forEach(sg=>{
+      const span=sg.ce-sg.cs+1;
+      const left='calc((100% - 36px)/7 * '+sg.cs+' + 6px * '+sg.cs+')';
+      const width='calc((100% - 36px)/7 * '+span+' + 6px * '+(span-1)+')';
+      const content=sg.isStart?('<span class="nm">'+sg.res.name+' +'+sg.res.comp+'</span>'+chBadge(sg.res.ch)):'';
+      h+='<div class="rpill '+sg.res.state+'" style="left:'+left+';width:'+width+'">'+content+'</div>';
+    });
+    h+='</div>';
+  }
+  document.getElementById('cal').innerHTML=h;
+}
+
+function head(title, back){ return '<div class="phead"><p class="ph-title">'+title+'</p><button class="x" onclick="'+(back||'cancelFlow()')+'">✕</button></div>'; }
+
+function rangeFields(f){
+  if(f.scope!=='range') return '';
+  const both=f.from!=null&&f.to!=null, valid=both&&f.from<=f.to, n=both?(f.to-f.from+1):0;
+  let info;
+  if(both&&valid) info='<p style="font-size:12px;color:var(--muted);margin:6px 0 0">'+n+(n>1?' noches':' noche')+'</p>';
+  else if(both&&!valid) info='<p class="err-t">La fecha de fin no puede ser anterior al inicio.</p>';
+  else info='<p style="font-size:12px;color:var(--muted);margin:6px 0 0">Elige las fechas del rango.</p>';
+  return '<div style="display:flex;gap:10px">'+
+    '<div style="flex:1"><label class="f" style="margin-top:0">Desde</label><input type="date" class="datef" id="from" min="'+dstr(TODAY+1)+'" max="2026-06-30" value="'+(f.from!=null?dstr(f.from):'')+'" onchange="updateRange()"></div>'+
+    '<div style="flex:1"><label class="f" style="margin-top:0">Hasta (incluido)</label><input type="date" class="datef" id="to" min="'+dstr(TODAY+1)+'" max="2026-06-30" value="'+(f.to!=null?dstr(f.to):'')+'" onchange="updateRange()"></div></div>'+info;
+}
+function resNotePrice(f){ const r=reservedIn(f.from,f.to); return r?'<div class="note"><span class="i">!</span><span>'+r+(r>1?' de estas noches tienen':' de estas noches tiene')+' reserva confirmada, el importe cobrado ya no cambia.</span></div>':''; }
+function resNoteBlock(f){ const r=reservedIn(f.from,f.to); return r?'<div class="note"><span class="i">!</span><span>'+r+(r>1?' noches ya tienen reserva y no se bloquearán':' noche ya tiene reserva y no se bloqueará')+'.</span></div>':''; }
+
+function panelIdle(){
+  return '<p class="ph-title" style="margin-bottom:10px">Junio 2026</p>'+
+    '<div class="menurow info"><span class="mt">Precio base</span><span class="mv">'+BASE+' € / noche</span></div>'+
+    '<div class="menurow" onclick="menuRange()"><span class="mt">Editar precios por rango</span><span class="chev">›</span></div>'+
+    '<div class="menurow" onclick="menuBlock()"><span class="mt">Bloquear fechas</span><span class="chev">›</span></div>'+
+    '<div class="menurow" onclick="menuHistory()"><span class="mt">Historial de cambios</span><span class="chev">›</span></div>';
+}
+function panelDayDetail(){
+  const n=app.day, dd=days[n], q=String.fromCharCode(39);
+  const rows=CH.map(c=>{ const o=dd.origin?dd.origin[c.k]:'base', ol=originLabel(o); return '<div class="kv"><span class="kn"><span class="abv">'+c.a+'</span><span><span style="display:block">'+c.n+'</span><span style="font-size:11px;color:var(--muted)">'+ol+'</span></span></span><b>'+dd.ch[c.k]+' €</b></div>'; }).join('');
+  const sync=CH.map(c=>{ const st=dd.sync?dd.sync[c.k]:'ok'; const lab=st==='ok'?('Sincronizado · '+(dd.synced||'hace un momento')):(st==='pending'?'Pendiente':'Error'); const retry=st==='error'?('<button class="btn mini" onclick="retrySync('+n+','+q+c.k+q+')">Reintentar</button>'):''; return '<div class="syncrow"><span>'+c.n+'</span><span style="display:inline-flex;align-items:center;gap:8px">'+retry+'<span class="stag '+st+'">'+lab+'</span></span></div>'; }).join('');
+  return head('Detalle del día')+
+    '<h3 class="p-h">Día '+n+' jun'+(dd.manual?' · editado manual':'')+'</h3>'+
+    '<p class="sub">Precio actual por canal</p>'+rows+
+    '<p class="sub" style="margin:16px 0 6px">Sincronización por canal</p>'+sync+
+    '<button class="btn primary wide" style="margin-top:12px" onclick="priceChooseDay()">Editar precios</button>'+
+    '<button class="btn wide" style="margin-top:8px" onclick="blockDay()">Bloquear fecha</button>';
+}
+function panelPriceChoose(){
+  const day=app.form.scope==='day';
+  return head('Editar precios', day?'backDay()':'cancelFlow()')+
+    '<h3 class="p-h">'+fLabel(app.form)+'</h3>'+
+    '<p class="sub">¿Cómo quieres editar el precio?</p>'+
+    '<button class="btn block" onclick="goPriceAll()">Editar precio para todos los canales</button>'+
+    '<button class="btn block" onclick="goPriceChan()">Editar precio por canal</button>'+
+    '<button class="btn wide" onclick="'+(day?'backDay()':'cancelFlow()')+'">Atrás</button>';
+}
+function panelPriceAll(){
+  const f=app.form;
+  return head('Precio · todos los canales','goPriceChoose()')+
+    (f.scope==='range'?'<h3 class="p-h">Editar por rango</h3>':'<h3 class="p-h">Día '+f.from+' jun</h3>')+
+    '<div style="height:8px"></div>'+rangeFields(f)+
+    '<label class="f">Nuevo precio para todos los canales</label>'+
+    '<div class="field'+(f.err==='price'?' err':'')+'"><input id="allInp" value="'+f.all+'" placeholder="'+BASE+'" inputmode="decimal"><span class="u">€ / noche</span></div>'+
+    (f.err==='price'?'<p class="err-t">Introduce un precio mayor que 0.</p>':'')+
+    resNotePrice(f)+
+    '<div class="foot"><button class="btn" onclick="goPriceChoose()">Atrás</button><button class="btn primary" onclick="reviewAll()">Revisar y guardar</button></div>';
+}
+function panelPriceChan(){
+  const f=app.form;
+  const rows=CH.map(c=>'<div class="chrow"><span class="chname"><span class="abv">'+c.a+'</span>'+c.n+'</span><input class="miniinp" data-ch="'+c.k+'" value="'+f.ch[c.k]+'" inputmode="decimal"></div>').join('');
+  return head('Precio · por canal','goPriceChoose()')+
+    (f.scope==='range'?'<h3 class="p-h">Editar por rango</h3>':'<h3 class="p-h">Día '+f.from+' jun</h3>')+
+    '<div style="height:8px"></div>'+rangeFields(f)+
+    '<label class="f">Nuevo precio por canal</label>'+rows+
+    (f.err==='price'?'<p class="err-t">Cada canal necesita un precio mayor que 0.</p>':'')+
+    resNotePrice(f)+
+    '<div class="foot"><button class="btn" onclick="goPriceChoose()">Atrás</button><button class="btn primary" onclick="reviewChan()">Revisar y guardar</button></div>';
+}
+function panelPriceConfirm(){
+  const f=app.form, day=f.scope==='day', ns=editableIn(f.from,f.to).length;
+  const rows=CH.map(c=>{ const b=day?days[f.from].ch[c.k]:BASE; return '<div class="diff"><span>'+c.n+'</span><span><span class="old">'+b+' €</span>'+f.ch[c.k]+' €</span></div>'; }).join('');
+  return head('Confirmar cambio de precio', f.mode==='all'?'goPriceAll()':'goPriceChan()')+
+    '<h3 class="p-h">Vas a cambiar el precio de '+ns+(ns>1?' noches':' noche')+'</h3>'+
+    '<p class="sub">'+fLabel(f)+'</p>'+rows+
+    resNotePrice(f)+
+    '<div class="note"><span class="i">↻</span><span>El precio se sincronizará con las plataformas conectadas.</span></div>'+
+    '<div class="foot"><button class="btn" onclick="'+(f.mode==='all'?'goPriceAll()':'goPriceChan()')+'">Atrás</button><button class="btn primary" onclick="savePrice()">Confirmar ('+ns+(ns>1?' noches':' noche')+')</button></div>';
+}
+function panelBlock(){
+  const f=app.form, day=f.scope==='day';
+  const chks=CH.map(c=>'<div class="chrow"><span class="chname"><span class="chk '+(f.ch.includes(c.k)?'on':'')+'" onclick="toggleBch(\''+c.k+'\')">✓</span>'+c.n+'</span></div>').join('');
+  return head('Bloquear fechas', day?'backDay()':'cancelFlow()')+
+    (f.scope==='range'?'<h3 class="p-h">Bloquear por rango</h3>':'<h3 class="p-h">Día '+f.from+' jun</h3>')+
+    '<div style="height:8px"></div>'+rangeFields(f)+
+    '<label class="f">Motivo</label><div class="field"><input id="motivoInp" value="'+(f.motivo||'').replace(/"/g,'&quot;')+'" placeholder="Ej. mantenimiento, uso propio, reforma…"></div>'+
+    '<label class="f">Bloquear en</label>'+chks+
+    resNoteBlock(f)+
+    '<div class="foot"><button class="btn" onclick="'+(day?'backDay()':'cancelFlow()')+'">Atrás</button><button class="btn primary" onclick="reviewBlock()">Revisar</button></div>';
+}
+function panelBlockConfirm(){
+  const f=app.form, willBlock=editableIn(f.from,f.to).length;
+  const names=CH.filter(c=>f.ch.includes(c.k)).map(c=>c.n).join(', ');
+  return head('Confirmar bloqueo','goBlockBack()')+
+    '<h3 class="p-h">'+willBlock+(willBlock>1?' noches':' noche')+' · '+(f.scope==='day'?('día '+f.from):(f.from+'–'+f.to))+' jun</h3><div style="height:6px"></div>'+
+    '<div class="diff"><span>Motivo</span><b>'+(f.motivo||'—')+'</b></div>'+
+    '<div class="diff"><span>Canales</span><b>'+(names||'—')+'</b></div>'+
+    resNoteBlock(f)+
+    '<div class="note"><span class="i">↻</span><span>El cierre se sincronizará con las plataformas seleccionadas.</span></div>'+
+    '<div class="foot"><button class="btn" onclick="goBlockBack()">Atrás</button><button class="btn primary" onclick="saveBlock()">Bloquear '+willBlock+(willBlock>1?' noches':' noche')+'</button></div>';
+}
+function panelCell(){
+  const n=app.cellDay, dd=days[n];
+  return head('Fecha bloqueada')+
+    '<h3 class="p-h">Día '+n+' jun</h3><div style="height:6px"></div>'+
+    '<div class="diff"><span>Estado</span><b>Bloqueada</b></div>'+
+    '<div class="diff"><span>Motivo</span><b>'+dd.motivo+'</b></div>'+
+    '<div class="diff"><span>Canales</span><b>'+dd.bch.map(k=>CH.find(c=>c.k===k).n).join(', ')+'</b></div>'+
+    '<div class="foot"><button class="btn" onclick="cancelFlow()">Cerrar</button><button class="btn primary" onclick="unblock()">Desbloquear</button></div>';
+}
+function stateLabel(x){ return {active:'Activa',confirmed:'Confirmada',past:'Pasada'}[x]||x; }
+function chName(ch){ const c=CH.find(x=>x.k===ch); return c?c.n:ch; }
+function panelResDetail(){
+  const r=app.res, nights=r.to-r.from+1, total=nights*days[r.from].ch.web, q=String.fromCharCode(39);
+  const dstatus=r.to<TODAY?'Caducado':(r.from>TODAY?'Programado':'Activo');
+  const stag=dstatus==='Activo'?'ok':(dstatus==='Programado'?'pending':'error');
+  return head('Reserva')+
+    '<h3 class="p-h">'+r.name+'</h3>'+
+    '<p class="sub">Reserva '+stateLabel(r.state).toLowerCase()+'</p>'+
+    '<div class="diff"><span>Canal</span><span style="display:inline-flex;align-items:center;gap:7px">'+chBadge(r.ch)+chName(r.ch)+'</span></div>'+
+    '<div class="diff"><span>Entrada</span><b>'+r.from+' jun</b></div>'+
+    '<div class="diff"><span>Salida</span><b>'+(r.to+1)+' jun</b></div>'+
+    '<div class="diff"><span>Noches</span><b>'+nights+'</b></div>'+
+    '<div class="diff"><span>Huéspedes</span><b>'+(r.comp+1)+' ('+r.comp+' acompañantes)</b></div>'+
+    '<div class="diff"><span>Importe</span><b>'+total+' €</b></div>'+
+    '<div style="border:1px solid var(--line2);border-radius:8px;padding:12px 14px;margin-top:14px">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">Código de puerta</span><span class="stag '+stag+'">'+dstatus+'</span></div>'+
+      '<div style="font-size:26px;font-weight:700;letter-spacing:.25em;margin:6px 0 2px">'+r.code+'</div>'+
+      '<p style="font-size:11px;color:var(--muted);margin:2px 0 8px">Activo del '+r.from+' al '+(r.to+1)+' jun · válido solo durante la estancia.</p>'+
+      '<button class="btn mini" onclick="toast('+q+'Código copiado'+q+')">Copiar código</button>'+
+    '</div>'+
+    '<div class="foot"><button class="btn" onclick="cancelFlow()">Cerrar</button><button class="btn primary" onclick="toast('+q+'Iría al módulo Reservas'+q+')">Abrir en Reservas</button></div>';
+}
+function panelHistory(){
+  const rows=history.length?history.map(h=>'<div class="hist"><div class="ht">'+h.ht+'</div><div class="hs">'+h.hs+'</div></div>').join(''):'<div class="empty">Sin cambios registrados.</div>';
+  return head('Historial de cambios')+'<h3 class="p-h">Historial</h3><div style="height:6px"></div>'+rows;
+}
+function renderPanel(){
+  const map={idle:panelIdle,dayDetail:panelDayDetail,priceChoose:panelPriceChoose,priceAll:panelPriceAll,priceChan:panelPriceChan,priceConfirm:panelPriceConfirm,block:panelBlock,blockConfirm:panelBlockConfirm,cell:panelCell,resDetail:panelResDetail,history:panelHistory};
+  document.getElementById('panel').innerHTML=(map[app.view]||panelIdle)();
+}
+function render(){ renderCal(); renderPanel(); }
+
+function objStr(o){ const r={}; for(const k in o) r[k]=String(o[k]); return r; }
+function readInputs(){
+  const f=document.getElementById('from'); if(f) app.form.from=f.value?dnum(f.value):null;
+  const t=document.getElementById('to'); if(t) app.form.to=t.value?dnum(t.value):null;
+  const a=document.getElementById('allInp'); if(a) app.form.all=a.value;
+  document.querySelectorAll('[data-ch]').forEach(el=>app.form.ch[el.getAttribute('data-ch')]=el.value);
+  const mo=document.getElementById('motivoInp'); if(mo) app.form.motivo=mo.value;
+}
+function updateRange(){ readInputs(); render(); }
+
+function onCell(n){
+  if(days[n].reserved){ app.view='resDetail'; app.res=days[n].res; app.form=null; render(); return; }
+  if(isPast(n)){ toast('Las fechas pasadas no se pueden editar.'); return; }
+  if(days[n].blocked){ app.view='cell'; app.cellDay=n; app.form=null; render(); return; }
+  app.day=n; app.view='dayDetail'; app.form=null; render();
+}
+function cancelFlow(){ app={view:'idle',day:null,form:null,cellDay:null}; render(); }
+function backDay(){ app.view='dayDetail'; render(); }
+function menuHistory(){ app.view='history'; render(); }
+
+function menuRange(){ app.form={type:'price',scope:'range',from:null,to:null,mode:null,all:'',ch:{web:'',airbnb:'',booking:''},err:null}; app.view='priceChoose'; render(); }
+function priceChooseDay(){ const n=app.day; app.form={type:'price',scope:'day',from:n,to:n,mode:null,all:'',ch:{web:'',airbnb:'',booking:''},err:null}; app.view='priceChoose'; render(); }
+function goPriceChoose(){ app.view='priceChoose'; render(); }
+function goPriceAll(){ const f=app.form; f.mode='all'; f.all=f.scope==='day'?String(days[f.from].ch.web):(f.all||''); f.err=null; app.view='priceAll'; render(); }
+function goPriceChan(){ const f=app.form; f.mode='chan'; if(f.scope==='day') f.ch=objStr(days[f.from].ch); f.err=null; app.view='priceChan'; render(); }
+function reviewAll(){ readInputs(); const f=app.form; if(f.scope==='range'){ if(f.from==null||f.to==null){ toast('Elige las fechas del rango.'); return; } if(f.from>f.to){ toast('La fecha de fin no puede ser anterior al inicio.'); return; } } const v=f.all; if(v===''||isNaN(+v)||+v<=0){ f.err='price'; render(); return; } f.ch={web:v,airbnb:v,booking:v}; f.err=null; app.view='priceConfirm'; render(); }
+function reviewChan(){ readInputs(); const f=app.form; if(f.scope==='range'){ if(f.from==null||f.to==null){ toast('Elige las fechas del rango.'); return; } if(f.from>f.to){ toast('La fecha de fin no puede ser anterior al inicio.'); return; } } const bad=CH.some(c=>{const v=f.ch[c.k];return v===''||isNaN(+v)||+v<=0;}); if(bad){ f.err='price'; render(); return; } f.err=null; app.view='priceConfirm'; render(); }
+function savePrice(){ const f=app.form; const ns=editableIn(f.from,f.to); ns.forEach(n=>{ CH.forEach(c=>{ days[n].ch[c.k]=+f.ch[c.k]; if(days[n].origin) days[n].origin[c.k]='rentsody'; }); days[n].manual=(+f.ch.web!==BASE); if(days[n].sync) CH.forEach(c=>days[n].sync[c.k]='pending'); }); history.unshift({ht:'Precio · '+fLabel(f),hs:'web '+f.ch.web+' € · tú · 6 jul'}); cancelFlow(); toast('Precios guardados · sincronizando…'); setTimeout(()=>{ ns.forEach(n=>{ if(days[n].sync) CH.forEach(c=>days[n].sync[c.k]='ok'); days[n].synced='hace un momento'; }); render(); toast('Precios sincronizados'); },1500); }
+function retrySync(n,ch){ days[n].sync[ch]='pending'; render(); setTimeout(()=>{ days[n].sync[ch]='ok'; days[n].synced='hace un momento'; render(); toast(chName(ch)+' sincronizado'); },1200); }
+
+function menuBlock(){ app.form={type:'block',scope:'range',from:null,to:null,motivo:'',ch:CH.map(c=>c.k)}; app.view='block'; render(); }
+function blockDay(){ const n=app.day; app.form={type:'block',scope:'day',from:n,to:n,motivo:'',ch:CH.map(c=>c.k)}; app.view='block'; render(); }
+function setMotivo(i){ readInputs(); app.form.motivo=MOTIVOS[i]; render(); }
+function toggleBch(k){ readInputs(); const i=app.form.ch.indexOf(k); if(i>-1) app.form.ch.splice(i,1); else app.form.ch.push(k); render(); }
+function reviewBlock(){ readInputs(); const f=app.form; if(f.scope==='range'){ if(f.from==null||f.to==null){ toast('Elige las fechas del rango.'); return; } if(f.from>f.to){ toast('La fecha de fin no puede ser anterior al inicio.'); return; } } if(!f.ch.length){ toast('Elige al menos un canal.'); return; } if(!editableIn(f.from,f.to).length){ toast('No hay fechas bloqueables en el rango.'); return; } app.view='blockConfirm'; render(); }
+function goBlockBack(){ app.view='block'; render(); }
+function saveBlock(){ const f=app.form; editableIn(f.from,f.to).forEach(n=>{ days[n].blocked=true; days[n].motivo=f.motivo; days[n].bch=[...f.ch]; }); history.unshift({ht:'Bloqueo · '+fLabel(f),hs:f.motivo+' · tú · 6 jul'}); cancelFlow(); toast('Fechas bloqueadas · sincronizando…'); setTimeout(()=>toast('Fechas cerradas en los canales'),1500); }
+function unblock(){ const n=app.cellDay; days[n].blocked=false; days[n].motivo=''; days[n].bch=[]; history.unshift({ht:'Desbloqueo · '+n+' jun',hs:'reabierta · tú · 6 jul'}); cancelFlow(); toast('Fecha desbloqueada · sincronizando…'); setTimeout(()=>toast('Fecha reabierta en los canales'),1500); }
+
+const RENTALS=(function(){
+  const a=[{id:'00001',name:'Estudio Chic Mármoles'},{id:'00002',name:'Ático Gran Vía'},{id:'00003',name:'Apartamento Rambla'}];
+  const T=['Estudio','Ático','Apartamento','Loft','Dúplex','Piso','Suite','Casa'];
+  const Z=['Sol','Marina','Centro','Playa','Retiro','Gótico','Malasaña','Puerto','Catedral','Alameda','Río','Parque','Vista Mar','Triana','Muelle','Faro','Delicias','Chamberí','Alcázar','Ribera'];
+  for(let i=4;i<=100;i++){ a.push({id:('00000'+i).slice(-5), name:T[i%T.length]+' '+Z[(i*7)%Z.length]}); }
+  return a;
+})();
+let sel={open:false,q:'',selId:'00001'};
+function selRental(){ return RENTALS.find(r=>r.id===sel.selId)||RENTALS[0]; }
+function uFiltered(){ const q=sel.q.trim().toLowerCase(); return q?RENTALS.filter(r=>(r.id+' '+r.name).toLowerCase().indexOf(q)>-1):RENTALS; }
+function uOpt(r){ return '<div class="uopt '+(r.id===sel.selId?'on':'')+'" data-rid="'+r.id+'"><span class="uthumb"></span><span class="un">'+r.id+' - '+r.name+'</span></div>'; }
+function renderUnitList(){ const f=uFiltered(); const c=document.getElementById('ucount'); if(c) c.textContent=f.length+' de '+RENTALS.length; const l=document.getElementById('ulist'); if(!l) return; l.innerHTML=f.length?f.map(uOpt).join(''):'<div class="uempty">Sin resultados</div>'; }
+function renderUnit(){
+  const r=selRental();
+  const mag='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8f8f8f" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>';
+  let h='<div class="utrig" data-utrig="1"><span class="uthumb"></span><span class="utname">'+r.id+' - '+r.name+'</span><span style="color:var(--muted)">'+(sel.open?'▴':'▾')+'</span></div>';
+  if(sel.open){ h+='<div class="udrop"><div class="usearch">'+mag+'<input id="usearch" placeholder="Buscar por nombre o ID" value="'+sel.q.replace(/"/g,'&quot;')+'"></div><p class="ucount" id="ucount"></p><div class="ulist" id="ulist"></div></div>'; }
+  document.getElementById('unitwrap').innerHTML=h;
+  if(sel.open){ const inp=document.getElementById('usearch'); inp.focus(); inp.setSelectionRange(inp.value.length,inp.value.length); inp.addEventListener('input',function(){ sel.q=inp.value; renderUnitList(); }); renderUnitList(); }
+}
+document.getElementById('unitwrap').addEventListener('click',function(e){
+  e.stopPropagation();
+  if(e.target.closest('[data-utrig]')){ sel.open=!sel.open; renderUnit(); return; }
+  const o=e.target.closest('[data-rid]'); if(o){ sel.selId=o.getAttribute('data-rid'); sel.open=false; renderUnit(); toast('Unidad seleccionada'); return; }
+});
+document.addEventListener('click',function(e){ if(sel.open && !e.target.closest('#unitwrap')){ sel.open=false; renderUnit(); } });
+renderUnit();
+document.getElementById('cal').addEventListener('click',e=>{ const c=e.target.closest('[data-day]'); if(c) onCell(+c.getAttribute('data-day')); });
+resetApp();
+</script>
+</body>
+</html>
